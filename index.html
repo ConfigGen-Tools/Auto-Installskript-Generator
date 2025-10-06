@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Titel für diesen Generator beibehalten -->
-    <title>Batch-Installationsskript-Generator</title> 
+    <!-- Titel auf die tatsächliche Funktion (Batch-Skript) korrigiert -->
+    <title>Windows Software-Installationsskript-Generator</title> 
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Übernahme der Schriftart und des modularen Stils -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Modulare Variablen des Benutzers übernommen */
@@ -36,7 +37,6 @@
         }
         .btn-primary:hover {
             background-color: var(--brand-primary-hover);
-            /* Skalierung entfernt, um bei vielen Klicks weniger störend zu sein */
             opacity: 0.9;
         }
         .btn-primary:focus {
@@ -74,103 +74,149 @@
         }
     </style>
 </head>
-<!-- Body-Klasse angepasst -->
 <body class="flex items-center justify-center min-h-screen p-4">
+    <div class="w-full max-w-3xl bg-gray-800 rounded-2xl shadow-2xl p-8 space-y-8">
+        <!-- Header: Titel an BAT-Skript angepasst -->
+        <header>
+            <img src="https://raw.githubusercontent.com/ConfigGen-Tools/configgen-tools.github.io/refs/heads/main/ConfigGen-Windows.png" alt="Projektlogo" class="mx-auto h-24 w-24 rounded-2xl mb-4">
+            <h1 class="text-3xl font-bold text-center text-white">Automatisierter Software-Installer für Windows (Batch)</h1>
+            <p class="text-center text-gray-400 mt-2">Erstellt ein Skript zur automatischen Installation von Programmen nach der Windows-Einrichtung.</p>
+        </header>
 
-<div class="container w-full max-w-3xl bg-gray-800 rounded-2xl shadow-2xl p-8 space-y-8">
-    <!-- Header-Struktur des Benutzers übernommen -->
-    <header>
-        <img src="https://raw.githubusercontent.com/ConfigGen-Tools/configgen-tools.github.io/refs/heads/main/ConfigGen-Windows.png" alt="Projektlogo" class="mx-auto h-24 w-24 rounded-2xl mb-4">
-        <h1 class="text-3xl font-bold text-center text-white">Batch-Installationsskript-Generator</h1>
-        <p class="text-center text-gray-400 mt-2">Erstellen Sie Ihre eigene `.bat`-Datei für automatisierte Software-Installationen (lokale Pfade & winget).</p>
-    </header>
-
-    <div class="grid md:grid-cols-2 gap-8">
-        <!-- Input Section -->
-        <div class="bg-gray-700 p-6 rounded-xl shadow-lg border border-gray-600">
-            <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-600 pb-2">1. Installation hinzufügen</h2>
-
-            <div class="mb-4">
-                <label for="installType" class="block text-sm font-medium text-gray-300 mb-1">Installationstyp</label>
-                <select id="installType" class="input-style w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 appearance-none">
-                    <option value="winget">Software über winget (Paket-ID)</option>
-                    <option value="local">Lokales Setup (Pfad zur EXE/MSI)</option>
-                </select>
+        <!-- Tabs: Namen an den Workflow angepasst -->
+        <main x-data="{ tab: 'erstellen' }" class="bg-gray-900 p-4 rounded-lg">
+            <div class="flex border-b border-gray-700">
+                <button @click="tab = 'erstellen'" :class="{ 'bg-indigo-600 text-white': tab === 'erstellen', 'text-gray-400 hover:bg-gray-700': tab !== 'erstellen' }" class="px-4 py-2 font-semibold rounded-t-lg focus:outline-none transition-colors duration-200">1. Skript erstellen</button>
+                <button @click="tab = 'anwenden'" :class="{ 'bg-indigo-600 text-white': tab === 'anwenden', 'text-gray-400 hover:bg-gray-700': tab !== 'anwenden' }" class="px-4 py-2 font-semibold rounded-t-lg focus:outline-none transition-colors duration-200">2. Skript anwenden</button>
             </div>
+            <div class="py-4">
 
-            <!-- Winget Input Group with Source Selector -->
-            <div id="wingetInput" class="input-group space-y-3">
-                <!-- Dropdown-Liste für die Quelle -->
-                <div>
-                    <label for="wingetSource" class="block text-sm font-medium text-gray-300">Winget Quelle</label>
-                    <select id="wingetSource" class="input-style w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 appearance-none">
-                        <option value="winget" selected>Winget (Standard)</option>
-                        <option value="msstore">Microsoft Store</option>
-                    </select>
+
+                <!-- Tab-Inhalt: Erstellen (Layout von Stapel auf Zwei-Spalten-Grid geändert) -->
+                <div x-show="tab === 'erstellen'" x-cloak class="space-y-6 md:space-y-0 md:grid md:grid-cols-2 md:gap-6" style="color: var(--text-dark);">
+                    <!-- Beschreibung spannt beide Spalten auf Desktop -->
+                    <p class="md:col-span-2">Fügen Sie Programme hinzu, die automatisch nach der Windows-Installation gestartet werden sollen.</p>
+
+                    <!-- Input Section (Linke Spalte) -->
+                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg border border-gray-600 h-full">
+                        <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-600 pb-2">1. Installation hinzufügen</h2>
+
+                        <div class="mb-4">
+                            <label for="installType" class="block text-sm font-medium text-gray-300 mb-1">Installationstyp</label>
+                            <select id="installType" class="input-style w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 appearance-none">
+                                <option value="winget">Software über winget (Paket-ID)</option>
+                                <option value="local">Lokales Setup (Pfad zur EXE/MSI)</option>
+                            </select>
+                        </div>
+
+                        <!-- Winget Input Group with Source Selector -->
+                        <div id="wingetInput" class="input-group space-y-3">
+                            <!-- Dropdown-Liste für die Quelle -->
+                            <div>
+                                <label for="wingetSource" class="block text-sm font-medium text-gray-300">Winget Quelle</label>
+                                <select id="wingetSource" class="input-style w-full p-3 border rounded-lg focus:ring-blue-500 focus:border-blue-500 appearance-none">
+                                    <option value="winget" selected>Winget (Standard)</option>
+                                    <option value="msstore">Microsoft Store</option>
+                                </select>
+                            </div>
+
+                            <label for="wingetId" class="block text-sm font-medium text-gray-300">Winget Paket-ID (z.B. Mozilla.Firefox.de)</label>
+                            <input type="text" id="wingetId" placeholder="Paket-ID eingeben" class="input-style w-full p-3 border rounded-lg">
+                        </div>
+
+                        <!-- ANPASSUNG: Vorgefertigter C:\Temp\ Pfad mit Warnung -->
+                        <div id="localInput" class="input-group space-y-3 hidden">
+                            <label for="localPath" class="block text-sm font-medium text-gray-300">Relativer Pfad zur Setup-Datei (unter C:\Temp)</label>
+                            <div class="flex">
+                                <span class="inline-flex items-center px-3 text-sm text-gray-200 bg-gray-600 border border-r-0 border-gray-600 rounded-l-lg">
+                                    C:\Temp\
+                                </span>
+                                <input type="text" id="localPath" placeholder="Drucker\Treiber\Setup.exe oder voller Pfad" class="input-style rounded-none rounded-r-lg w-full p-3 border focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+
+                            <!-- Wichtige Warnmeldung (angepasst für Dark Mode) -->
+                            <div class="p-3 bg-yellow-900 border border-yellow-700 rounded-lg text-xs text-yellow-300 font-medium">
+                                <p class="mb-1 font-bold">Achtung: Setup-Typ prüfen!</p>
+                                <ul class="list-disc list-inside space-y-0.5 ml-1">
+                                    <li>**MSI-Dateien** sind für die Automatisierung (Silent Install) am zuverlässigsten.</li>
+                                    <li>**EXE-Setups** (insb. App Installer/MSIX) können im Batch-Modus fehlschlagen oder benötigen spezielle Parameter.</li>
+                                </ul>
+                                <p class="mt-2 text-gray-300">Generiert: `start /wait "" "C:\Temp\[Ihr Pfad]"`</p>
+                            </div>
+                        </div>
+
+                        <button id="addItemBtn" class="btn-primary w-full mt-6 font-semibold py-3 rounded-lg shadow-md">
+                            Zur Liste hinzufügen
+                        </button>
+                    </div>
+
+                    <!-- List Section (Rechte Spalte) -->
+                    <!-- WICHTIG: h-full und flex flex-col stellen sicher, dass der Container die volle Höhe ausnutzt -->
+                    <div class="bg-gray-700 p-6 rounded-xl shadow-lg border border-gray-600 flex flex-col h-full">
+                        <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-600 pb-2">2. Installationsschritte</h2>
+                        <!-- FIX: max-h-[300px] entfernt. flex-grow sorgt nun dafür, dass der Container alle verfügbare Höhe ausfüllt. -->
+                        <div id="itemList" class="flex-grow space-y-2 overflow-y-auto pr-2">
+                            <!-- Items will be inserted here -->
+                            <p id="emptyMessage" class="text-gray-400 italic text-center py-4">Fügen Sie Schritte hinzu, um das Skript zu starten.</p>
+                        </div>
+                        <button id="clearListBtn" class="mt-4 bg-red-600 text-white font-semibold py-2 rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
+                            Liste leeren
+                        </button>
+                    </div>
                 </div>
 
-                <label for="wingetId" class="block text-sm font-medium text-gray-300">Winget Paket-ID (z.B. Mozilla.Firefox.de)</label>
-                <input type="text" id="wingetId" placeholder="Paket-ID eingeben" class="input-style w-full p-3 border rounded-lg">
-            </div>
-
-            <!-- ANPASSUNG: Vorgefertigter C:\Temp\ Pfad mit Warnung -->
-            <div id="localInput" class="input-group space-y-3 hidden">
-                <label for="localPath" class="block text-sm font-medium text-gray-300">Relativer Pfad zur Setup-Datei (unter C:\Temp)</label>
-                <div class="flex">
-                    <span class="inline-flex items-center px-3 text-sm text-gray-200 bg-gray-600 border border-r-0 border-gray-600 rounded-l-lg">
-                        C:\Temp\
-                    </span>
-                    <input type="text" id="localPath" placeholder="Drucker\Treiber\Setup.exe oder voller Pfad" class="input-style rounded-none rounded-r-lg w-full p-3 border focus:ring-blue-500 focus:border-blue-500">
+                <!-- Tab-Inhalt: Anwenden (An BAT-Skript angepasst) -->
+                <div x-show="tab === 'anwenden'" x-cloak class="space-y-3 prose prose-invert max-w-none" style="color: var(--text-dark);">
+                    <p class="mb-6">Das generierte Skript führt die Installationen automatisiert im Hintergrund aus.</p>
+                    
+                    <!-- Option A: Clean Installation (autounattend) -->
+                    <h3 class="text-lg font-bold mb-2" style="color: var(--text-light);">Wie Sie das Skript verwenden</h3>
+                    <ol class="list-decimal list-inside space-y-3">
+                        <li>
+                            Klicken Sie auf den Button **"Als .bat herunterladen"** und speichern Sie das Skript als <code class="px-1 py-0.5 rounded" style="background-color: var(--bg-light);">Standardsoftware-Installer.bat</code>.
+                        </li>
+                        <li>
+                            Kopieren Sie die **.bat-Datei** auf den Ziel-PC (z.B. auf den Desktop oder ein temporäres Laufwerk).
+                        </li>
+                        <li>
+                            Stellen Sie sicher, dass alle lokalen Setup-Dateien (falls Sie welche hinzugefügt haben) im Pfad <code class="px-1 py-0.5 rounded" style="background-color: var(--bg-light);">C:\Temp\</code> auf dem Ziel-PC abgelegt sind. **WICHTIG:** Das Skript erstellt diesen Ordner nicht selbst.
+                        </li>
+                        <li>
+                            Klicken Sie mit der rechten Maustaste auf die <code class="px-1 py-0.5 rounded" style="background-color: var(--bg-light);">.bat</code>-Datei und wählen Sie **"Als Administrator ausführen"**, um die Installation zu starten.
+                        </li>
+                    </ol>
+                    
+                    <div class="bg-yellow-900/50 border-l-4 border-yellow-400 p-4 rounded-r-lg">
+                        <p class="font-bold text-yellow-300">Wichtiger Hinweis</p>
+                        <p class="text-yellow-200">Das Skript nutzt `start /wait`, um jede Installation abzuwarten. Es wird erst nach der letzten Installation (und dem Aufräumen) abgeschlossen. Bitte warten Sie, bis das Konsolenfenster sich schließt.</p>
+                    </div>
                 </div>
-                
-                <!-- Wichtige Warnmeldung (angepasst für Dark Mode) -->
-                <div class="p-3 bg-yellow-900 border border-yellow-700 rounded-lg text-xs text-yellow-300 font-medium">
-                    <p class="mb-1 font-bold">Achtung: Setup-Typ prüfen!</p>
-                    <ul class="list-disc list-inside space-y-0.5 ml-1">
-                        <li>**MSI-Dateien** sind für die Automatisierung (Silent Install) am zuverlässigsten.</li>
-                        <li>**EXE-Setups** (insb. App Installer/MSIX) können im Batch-Modus fehlschlagen oder benötigen spezielle Parameter.</li>
-                    </ul>
-                    <p class="mt-2 text-gray-300">Generiert: `start /wait "" "C:\Temp\[Ihr Pfad]"`</p>
+            </div>
+        </main>
+
+        <!-- Ausgabe-Bereich: Header angepasst -->
+        <div class="space-y-4">
+            <h2 class="text-2xl font-semibold text-white border-b border-gray-600 pb-2">3. Generiertes Skript</h2>
+            
+            <!-- CRITICAL FIX: display:none entfernt und Logik in JS verschoben -->
+            <div class="relative" id="output-container">
+                <!-- Label an BAT-Skript angepasst -->
+                <label for="output-textarea" class="block text-sm font-medium mb-2" style="color: var(--text-dark);">Inhalt von `Standardsoftware-Installer.bat`</label>
+                <textarea id="output-textarea" readonly class="w-full h-64 border rounded-md p-4 text-sm font-mono focus:ring-2" style="background-color: var(--bg-dark); border-color: var(--bg-light); color: var(--text-dark);"></textarea>
+                <div class="mt-4 flex space-x-4">
+                    <button id="copyScriptBtn" class="btn-primary flex-1 bg-blue-600 hover:bg-blue-700 font-semibold py-3 rounded-lg shadow-md">
+                        Skript kopieren
+                    </button>
+                    <button id="downloadScriptBtn" class="btn-primary flex-1 bg-indigo-600 hover:bg-indigo-700 font-semibold py-3 rounded-lg shadow-md">
+                        Als .bat herunterladen
+                    </button>
                 </div>
             </div>
-
-            <button id="addItemBtn" class="btn-primary w-full mt-6 font-semibold py-3 rounded-lg shadow-md">
-                Zur Liste hinzufügen
-            </button>
-        </div>
-
-        <!-- List Section -->
-        <div class="bg-gray-700 p-6 rounded-xl shadow-lg border border-gray-600 flex flex-col h-full">
-            <h2 class="text-2xl font-semibold text-white mb-4 border-b border-gray-600 pb-2">2. Installationsschritte</h2>
-            <div id="itemList" class="flex-grow space-y-2 overflow-y-auto max-h-[300px] pr-2">
-                <!-- Items will be inserted here -->
-                <p id="emptyMessage" class="text-gray-400 italic text-center py-4">Fügen Sie Schritte hinzu, um das Skript zu starten.</p>
-            </div>
-            <button id="clearListBtn" class="mt-4 bg-red-600 text-white font-semibold py-2 rounded-lg hover:bg-red-700 transition duration-150 shadow-md">
-                Liste leeren
-            </button>
+            <!-- Message Box for copy status -->
+            <div id="messageBox" class="hidden text-center p-3 rounded-lg font-medium"></div>
         </div>
     </div>
 
-    <!-- Output Section -->
-    <div class="space-y-4">
-        <h2 class="text-2xl font-semibold text-white border-b border-gray-600 pb-2">3. Generiertes Skript (Standardsoftware-Installer.bat)</h2>
-        <!-- Textarea angepasst für Dark Mode -->
-        <textarea id="output-textarea" readonly rows="10" class="w-full p-4 border-2 border-gray-600 rounded-lg bg-gray-900 text-sm font-mono text-green-400 resize-none shadow-inner"></textarea>
-        
-        <div class="flex flex-col sm:flex-row gap-4">
-            <button id="copyScriptBtn" class="btn-primary flex-1 bg-blue-600 hover:bg-blue-700 font-semibold py-3 rounded-lg shadow-md">
-                Skript kopieren
-            </button>
-            <button id="downloadScriptBtn" class="btn-primary flex-1 bg-indigo-600 hover:bg-indigo-700 font-semibold py-3 rounded-lg shadow-md">
-                Als .bat herunterladen
-            </button>
-        </div>
-
-        <!-- Message Box for copy status -->
-        <div id="messageBox" class="hidden text-center p-3 rounded-lg font-medium"></div>
-    </div>
-</div>
 
 <script>
     // Definition der vordefinierten Winget-Pakete mit Beschreibung
@@ -201,10 +247,22 @@
         downloadScriptBtn: document.getElementById('downloadScriptBtn'),
         clearListBtn: document.getElementById('clearListBtn'),
         emptyMessage: document.getElementById('emptyMessage'),
-        messageBox: document.getElementById('messageBox')
+        messageBox: document.getElementById('messageBox'),
+        outputContainer: document.getElementById('output-container') // Hinzugefügt
     };
 
     // --- Core Logic Functions ---
+
+    // NEU: Funktion zur Steuerung der Sichtbarkeit des Ausgabecontainers
+    function updateOutputVisibility() {
+        if (installationItems.length > 0) {
+            elements.outputContainer.style.display = 'block';
+            elements.emptyMessage.classList.add('hidden');
+        } else {
+            elements.outputContainer.style.display = 'none';
+            elements.emptyMessage.classList.remove('hidden');
+        }
+    }
 
     // Toggles visibility of input fields based on selected type
     function toggleInputs() {
@@ -287,6 +345,7 @@
 
     // Generates the final batch script string
     function generateScript() {
+        // Kopfzeile: Erzeugung des Ordners C:\Temp entfernt, da dieser (laut den Anweisungen) vom Benutzer vorab erstellt werden muss.
         const header = `@echo off\nSETLOCAL EnableDelayedExpansion\n\n:: --- GENERIERTES BATCH INSTALLATIONSSKRIPT ---\n:: Dies installiert die ausgewählte Software, oft im Silent-Modus.\n\n`;
         
         // Feste Aufräum-Anweisung, die am Ende ausgeführt wird
@@ -303,29 +362,23 @@
                     return `winget install --id "${item.value}" ${sourceParam} --accept-source-agreements --disable-interactivity --silent --accept-package-agreements --force`;
                 case 'local':
                     // Executes a local path and waits for it to complete. 
-                    // WICHTIG: Hier muss man ggf. Silent-Parameter anhängen, z.B. /S oder /qn für MSI
+                    // Der Pfad wird wie vom Nutzer vorgesehen verwendet.
                     return `start /wait "" "${item.value.replace(/\//g, '\\')}"`; 
                 default:
                     return `:: UNBEKANNTER BEFEHL: ${item.value}`;
             }
         }).join('\n');
 
-        // Das Aufräum-Kommando wird HIER zwischen den Commands und dem Footer eingefügt
         const script = header + commands + cleanupCommand + footer; 
         elements.outputTextarea.value = script;
-
-        if (installationItems.length === 0) {
-            elements.emptyMessage.classList.remove('hidden');
-        } else {
-            elements.emptyMessage.classList.add('hidden');
-        }
     }
 
     // Renders the list of items in the UI
     function renderList() {
         elements.itemList.innerHTML = '';
+
         if (installationItems.length === 0) {
-            elements.itemList.appendChild(elements.emptyMessage);
+            updateOutputVisibility(); // Versteckt den Output-Container, wenn Liste leer
             return;
         }
 
@@ -383,6 +436,7 @@
             li.addEventListener('drop', handleDrop);
             li.addEventListener('dragleave', handleDragLeave);
             li.addEventListener('dragenter', handleDragEnter);
+            li.addEventListener('dragend', handleDragEnd); 
             
             elements.itemList.appendChild(li);
         });
@@ -394,6 +448,8 @@
                 removeItem(index);
             });
         });
+
+        updateOutputVisibility(); // Macht den Output-Container sichtbar, wenn Elemente vorhanden
     }
 
     // Utility function to show temporary messages (e.g., "Copied!")
@@ -412,7 +468,6 @@
     let dragSrcEl = null;
 
     function handleDragStart(e) {
-        // Target element is the current dragged element
         dragSrcEl = this;
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/html', this.innerHTML);
@@ -436,6 +491,14 @@
         this.classList.remove('border-2', 'border-dashed', 'border-brand-ring');
     }
 
+    // Funktion, um die visuellen Drag-Effekte immer zurückzusetzen
+    function handleDragEnd(e) {
+        if (dragSrcEl) {
+            dragSrcEl.classList.remove('opacity-40');
+        }
+        this.classList.remove('border-2', 'border-dashed', 'border-brand-ring');
+    }
+
     function handleDrop(e) {
         if (e.stopPropagation) {
             e.stopPropagation(); // Stops the browser from redirecting.
@@ -456,7 +519,6 @@
             generateScript();
         }
         
-        dragSrcEl.classList.remove('opacity-40');
         return false;
     }
 
@@ -467,6 +529,7 @@
     toggleInputs();
     renderList();
     generateScript();
+    updateOutputVisibility(); // Stellt sicher, dass der Container beim Start korrekt angezeigt wird
 
     elements.installType.addEventListener('change', toggleInputs);
     elements.addItemBtn.addEventListener('click', addItem);
@@ -510,30 +573,13 @@
 
     // Clear list button
     elements.clearListBtn.addEventListener('click', () => {
-        // Since confirm() is blocked, we use a message to indicate action completion.
-        if (confirm("Sind Sie sicher, dass Sie alle Installationsschritte löschen möchten?")) {
-            installationItems = [];
-            renderList();
-            generateScript();
-            // Angepasste Farben für Dark Mode
-            showMessage('Liste wurde geleert.', 'bg-red-900 text-red-300');
-        } else {
-            installationItems = [];
-            renderList();
-            generateScript();
-            // Angepasste Farben für Dark Mode
-            showMessage('Liste wurde geleert.', 'bg-red-900 text-red-300');
-        }
+        installationItems = [];
+        renderList();
+        generateScript();
+        // Angepasste Farben für Dark Mode
+        showMessage('Liste wurde geleert.', 'bg-red-900 text-red-300');
     });
 
-    // Simple custom confirmation (replaces confirm() due to iframe restrictions)
-    function confirm(message) {
-        // For simplicity in the single-file environment, we skip the actual modal/blocking confirm
-        // and rely on the user clicking the button intentionally.
-        console.log(`CONFIRMATION MESSAGE (ignored in code): ${message}`);
-        return true; 
-    }
 </script>
-
 </body>
 </html>
