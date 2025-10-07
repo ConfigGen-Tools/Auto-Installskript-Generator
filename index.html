@@ -203,11 +203,9 @@
                 <!-- Label an BAT-Skript angepasst -->
                 <label for="output-textarea" class="block text-sm font-medium mb-2" style="color: var(--text-dark);">Inhalt von `Standardsoftware-Installer.bat`</label>
                 <textarea id="output-textarea" readonly class="w-full h-64 border rounded-md p-4 text-sm font-mono focus:ring-2" style="background-color: var(--bg-dark); border-color: var(--bg-light); color: var(--text-dark);"></textarea>
-                <div class="mt-4 flex space-x-4">
-                    <button id="copyScriptBtn" class="btn-primary flex-1 bg-blue-600 hover:bg-blue-700 font-semibold py-3 rounded-lg shadow-md">
-                        Skript kopieren
-                    </button>
-                    <button id="downloadScriptBtn" class="btn-primary flex-1 bg-indigo-600 hover:bg-indigo-700 font-semibold py-3 rounded-lg shadow-md">
+                <!-- HIER WURDE DER BUTTON-CONTAINER AN DIE EINZELNE SCHALTFLÄCHE ANGEPASST -->
+                <div class="mt-4">
+                    <button id="downloadScriptBtn" class="btn-primary w-full bg-indigo-600 hover:bg-indigo-700 font-semibold py-3 rounded-lg shadow-md">
                         Als .bat herunterladen
                     </button>
                 </div>
@@ -243,12 +241,12 @@
         addItemBtn: document.getElementById('addItemBtn'),
         itemList: document.getElementById('itemList'),
         outputTextarea: document.getElementById('output-textarea'),
-        copyScriptBtn: document.getElementById('copyScriptBtn'),
+        // copyScriptBtn: document.getElementById('copyScriptBtn'), // ENTFERNT
         downloadScriptBtn: document.getElementById('downloadScriptBtn'),
         clearListBtn: document.getElementById('clearListBtn'),
         emptyMessage: document.getElementById('emptyMessage'),
         messageBox: document.getElementById('messageBox'),
-        outputContainer: document.getElementById('output-container') // Hinzugefügt
+        outputContainer: document.getElementById('output-container') 
     };
 
     // --- Core Logic Functions ---
@@ -345,13 +343,12 @@
 
     // Generates the final batch script string
     function generateScript() {
-        // Kopfzeile: Erzeugung des Ordners C:\Temp entfernt, da dieser (laut den Anweisungen) vom Benutzer vorab erstellt werden muss.
-        const header = `@echo off\nSETLOCAL EnableDelayedExpansion\n\n:: --- GENERIERTES BATCH INSTALLATIONSSKRIPT ---\n:: Dies installiert die ausgewählte Software, oft im Silent-Modus.\n\n`;
+        // Kopfzeile und Fußzeile entfernt, wie vom Benutzer gewünscht, um das Skript auf die reinen Befehle zu reduzieren.
+        const header = ''; 
+        const footer = '';
         
         // Feste Aufräum-Anweisung, die am Ende ausgeführt wird
-        const cleanupCommand = '\n\n:: --- AUTOMATISCHES AUFRÄUMEN (Löscht den Temp-Ordner C:\\Temp) ---\nrd /s /q "C:\\Temp"';
-        
-        const footer = `\n\n:: --- ENDE DES SKRIPTS ---\nENDLOCAL\nECHO Installation abgeschlossen.\nPAUSE`;
+        const cleanupCommand = '\nrd /s /q "C:\\Temp"';
         
         const commands = installationItems.map(item => {
             switch (item.type) {
@@ -365,11 +362,21 @@
                     // Der Pfad wird wie vom Nutzer vorgesehen verwendet.
                     return `start /wait "" "${item.value.replace(/\//g, '\\')}"`; 
                 default:
-                    return `:: UNBEKANNTER BEFEHL: ${item.value}`;
+                    // Kommentar entfernt, um die Datei minimalistisch zu halten
+                    return `:: UNKNOWN COMMAND: ${item.value}`;
             }
         }).join('\n');
 
-        const script = header + commands + cleanupCommand + footer; 
+        let script = '';
+
+        if (installationItems.length > 0) {
+            // Skript enthält Befehle (commands) und Aufräum-Befehl (cleanupCommand)
+            script = commands + cleanupCommand;
+        } else {
+            // Bei leerer Liste wird ein minimalistischer Hinweis ausgegeben.
+            script = ':: Fügen Sie Installationsschritte über die Benutzeroberfläche hinzu.';
+        }
+        
         elements.outputTextarea.value = script;
     }
 
@@ -544,7 +551,8 @@
         });
     });
 
-    // Copy script button
+    // Copy script button (ENTFERNT)
+    /*
     elements.copyScriptBtn.addEventListener('click', () => {
         elements.outputTextarea.select();
         try {
@@ -556,6 +564,7 @@
             showMessage('Kopieren fehlgeschlagen.', 'bg-red-900 text-red-300');
         }
     });
+    */
 
     // Download script button
     elements.downloadScriptBtn.addEventListener('click', () => {
